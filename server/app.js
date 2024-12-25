@@ -23,7 +23,7 @@ const questions = [
   {
     question: "Quel pays est le plus grand du monde par sa superficie ?",
     answers: [
-      { text: "Canada", correct: true },
+      { text: "Russie", correct: true },
       { text: "Canada", correct: false },
       { text: "États-Unis", correct: false },
       { text: "Chine", correct: false },
