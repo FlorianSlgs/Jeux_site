@@ -144,12 +144,16 @@ useEffect(() => {
 
     if(winner){
       return (
-        <h1>winner is {winner}</h1>
+        <div className="min-h-screen bg-gray-200 flex items-center justify-center">
+          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            <h1 className="text-3xl font-bold text-center text-indigo-600">Le gagnant est {winner}</h1>
+          </div>  
+        </div>  
       )
     }
 
   return (
-<div className="min-h-screen bg-gray-100 flex items-center justify-center">
+<div className="min-h-screen bg-gray-200 flex items-center justify-center">
   {!info ? (
     <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
       <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz multijoueur💡</h1>
@@ -195,7 +199,7 @@ useEffect(() => {
             {options.map((answer, index) => (
               <li key={index}>
                 <button
-                  className={`w-full px-4 py-2 text-left bg-gray-100 rounded-lg hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500 ${
+                  className={`w-full px-4 py-2 text-left bg-gray-200 rounded-lg hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500 ${
                     selectedAnswerIndex === index ? "bg-indigo-200" : ""
                   }`}
                   onClick={() => handleAnswer(index)}
@@ -212,7 +216,7 @@ useEffect(() => {
                 key={index}
                 className="text-sm font-medium text-gray-700 flex justify-between"
               >
-                <span>{player.name}</span> <span>{player.score}</span>
+                <span>{player.name}</span> <span>{player.score} / 5</span>
               </p>
             ))}
           </div>
