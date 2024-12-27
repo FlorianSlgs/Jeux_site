@@ -44,7 +44,7 @@ function Quiz() {
     socket.on('message', (message) => {
       toast(`${message}`, {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
@@ -96,10 +96,10 @@ function Quiz() {
       };
       setScores(data.scores);
 
-      // Pause de 2 secondes avant de poser la question suivante
+      // Pause de 5 secondes avant de poser la question suivante
       setTimeout(() => {
         socket.emit('nextQuestion', room);
-      }, 3000);
+      }, 5000);
     });
 
     socket.on('gameOver', (data) => {
@@ -172,10 +172,12 @@ function Quiz() {
       <div className="min-h-screen bg-gray-200 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
           <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz multijoueur💡</h1>
+          <p className="pt-3 text-justify text-gray-700"><strong>Fonctionnement :</strong><br/>
+          Pour créer une partie il suffit de rentrer un nombre, les autres joueurs devront ensuite choisir le même nombre.</p>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <input
               required
-              placeholder="Entrer votre nom"
+              placeholder="Entrer votre pseudo"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
@@ -207,7 +209,7 @@ function Quiz() {
           <p className="text-center text-gray-700">Numéro de session: {room}</p>
           <p className="text-justify text-gray-700"><strong>Règles du jeu :</strong><br/>
           La question est clôturée dès qu'un joueur donne une réponse.
-          Une bonne réponse rapporte 1 point, tandis qu'une mauvaise réponse fait perdre 1 point.
+          Une bonne réponse rapporte 1 point, tandis qu'une mauvaise réponse fait perdre 1 point.<br/>
           <strong>Le premier joueur à atteindre 5 points remporte la partie.</strong></p>
           <ul className="mt-4">
             {players.map((player, index) => (
@@ -219,7 +221,7 @@ function Quiz() {
               onClick={handleStartGame}
               className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 mt-4"
             >
-              Commencer le jeu
+              Commencer
             </button>
           )}
         </div>
@@ -245,10 +247,10 @@ function Quiz() {
               {options.map((answer, index) => (
                 <li key={index}>
                   <button
-                    className={`w-full px-4 py-2 text-left bg-gray-200 rounded-lg hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500 ${
-                      selectedAnswerIndex === index ? "bg-indigo-200" : ""
-                    } ${
+                    className={`w-full px-4 py-2 text-left bg-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 ${
                       correctAnswerIndex === index ? "bg-green-200" : ""
+                    } ${
+                      selectedAnswerIndex === index && selectedAnswerIndex !== correctAnswerIndex ? "bg-red-200" : ""
                     }`}
                     onClick={() => handleAnswer(index)}
                     disabled={answered}

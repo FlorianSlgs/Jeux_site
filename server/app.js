@@ -96,7 +96,7 @@ io.on("connection", (socket) => {
       } else {
         setTimeout(() => {
           askNewQuestion(room);
-        }, 3000); // Pause de 2 secondes avant de poser la question suivante
+        }, 5000); // Pause de 5 secondes avant de poser la question suivante
       }
     }
   });
@@ -144,7 +144,7 @@ async function askNewQuestion(room) {
 
     rooms[room].questionTimeout = setTimeout(() => {
       io.to(room).emit("answerResult", {
-        playerName: "No one",
+        playerName: "Personne",
         isCorrect: false,
         correctAnswer: rooms[room].correctAnswer,
         scores: rooms[room].players.map(player => ({
@@ -155,7 +155,7 @@ async function askNewQuestion(room) {
 
       setTimeout(() => {
         askNewQuestion(room);
-      }, 3000); // Pause de 2 secondes avant de poser la question suivante
+      }, 5000); // Pause de 5 secondes avant de poser la question suivante
     }, 20000);
   } catch (err) {
     console.error("Error fetching questions:", err);
