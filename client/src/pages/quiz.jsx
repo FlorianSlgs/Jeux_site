@@ -109,6 +109,15 @@ function Quiz() {
     };
   }, []);
 
+  useEffect(() => {
+    if (seconds > 0) {
+      const timerId = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds - 1);
+      }, 1000);
+      return () => clearInterval(timerId);
+    }
+  }, [seconds]);
+
   const handleAnswer = (answerIndex) => {
     if (!answered) {
       setSelectedAnswerIndex(answerIndex);
