@@ -57,7 +57,7 @@ io.on("connection", (socket) => {
     rooms[room].players.push({ id: socket.id, name });
 
     io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
-    io.to(room).emit("message", `${name} has joined the game!`);
+    io.to(room).emit("message", `${name} a rejoint la partie!`);
   });
 
   socket.on("startGame", (room) => {
@@ -94,24 +94,34 @@ io.on("connection", (socket) => {
         io.to(room).emit("gameOver", { winner: winner.name });
         delete rooms[room];
       } else {
-        askNewQuestion(room);
+        setTimeout(() => {
+          askNewQuestion(room);
+        }, 3000); // Pause de 2 secondes avant de poser la question suivante
       }
     }
   });
 
+  socket.on("nextQuestion", (room) => {
+    askNewQuestion(room); // Pose une nouvelle question
+  });
+
   socket.on("disconnect", () => {
     for (const room in rooms) {
-      rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
-      io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
+      if (rooms[room]) {
+        rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
+        io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
+      }
     }
     console.log("A user disconnected");
   });
 });
 
 async function askNewQuestion(room) {
-  if (rooms[room].players.length === 0) {
-    clearTimeout(rooms[room].questionTimeout);
-    delete rooms[room];
+  if (!rooms[room] || rooms[room].players.length === 0) {
+    clearTimeout(rooms[room]?.questionTimeout);
+    if (rooms[room]) {
+      delete rooms[room];
+    }
     return;
   }
 
@@ -143,7 +153,9 @@ async function askNewQuestion(room) {
         })),
       });
 
-      askNewQuestion(room);
+      setTimeout(() => {
+        askNewQuestion(room);
+      }, 3000); // Pause de 2 secondes avant de poser la question suivante
     }, 20000);
   } catch (err) {
     console.error("Error fetching questions:", err);

@@ -18,6 +18,7 @@ function Quiz() {
   const [scores, setScores] = useState([]);
   const [winner, setWinner] = useState('');
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+  const [correctAnswerIndex, setCorrectAnswerIndex] = useState(null);
   const [players, setPlayers] = useState([]);
   const [isHost, setIsHost] = useState(false);
   const [hasGameStarted, setHasGameStarted] = useState(false);
@@ -44,9 +45,9 @@ function Quiz() {
       toast(`${message}`, {
         position: "top-right",
         autoClose: 5000,
-        hideProgressBar: false,
+        hideProgressBar: true,
         closeOnClick: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         draggable: true,
         progress: undefined,
         theme: "dark",
@@ -63,22 +64,42 @@ function Quiz() {
       setAnswered(false);
       setSeconds(data.timer);
       setSelectedAnswerIndex(null);
+      setCorrectAnswerIndex(null);
     });
 
     socket.on('answerResult', (data) => {
+      setCorrectAnswerIndex(data.correctAnswer);
+      setAnswered(true);
       if (data.isCorrect) {
-        toast(`Correct! ${data.playerName} got it right.`, {
+        toast(`${data.playerName} a trouvé la bonne réponse.`, {
           position: "bottom-center",
           autoClose: 2000,
-          hideProgressBar: false,
+          hideProgressBar: true,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
           draggable: true,
           progress: undefined,
           theme: "dark",
         });
-      }
+      };
+      if (!data.isCorrect) {
+        toast(`${data.playerName} s'est trompé.`, {
+          position: "bottom-center",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      };
       setScores(data.scores);
+
+      // Pause de 2 secondes avant de poser la question suivante
+      setTimeout(() => {
+        socket.emit('nextQuestion', room);
+      }, 3000);
     });
 
     socket.on('gameOver', (data) => {
@@ -110,13 +131,13 @@ function Quiz() {
   }, []);
 
   useEffect(() => {
-    if (seconds > 0) {
+    if (seconds > 0 && !answered) {
       const timerId = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
       return () => clearInterval(timerId);
     }
-  }, [seconds]);
+  }, [seconds, answered]);
 
   const handleAnswer = (answerIndex) => {
     if (!answered) {
@@ -184,6 +205,10 @@ function Quiz() {
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
           <h1 className="text-3xl font-bold text-center text-indigo-600">Salle d'attente</h1>
           <p className="text-center text-gray-700">Numéro de session: {room}</p>
+          <p className="text-justify text-gray-700"><strong>Règles du jeu :</strong><br/>
+          La question est clôturée dès qu'un joueur donne une réponse.
+          Une bonne réponse rapporte 1 point, tandis qu'une mauvaise réponse fait perdre 1 point.
+          <strong>Le premier joueur à atteindre 5 points remporte la partie.</strong></p>
           <ul className="mt-4">
             {players.map((player, index) => (
               <li key={index} className="py-2 px-4 bg-gray-200 rounded-lg mt-2">{player}</li>
@@ -222,6 +247,8 @@ function Quiz() {
                   <button
                     className={`w-full px-4 py-2 text-left bg-gray-200 rounded-lg hover:bg-indigo-100 focus:ring-2 focus:ring-indigo-500 ${
                       selectedAnswerIndex === index ? "bg-indigo-200" : ""
+                    } ${
+                      correctAnswerIndex === index ? "bg-green-200" : ""
                     }`}
                     onClick={() => handleAnswer(index)}
                     disabled={answered}
