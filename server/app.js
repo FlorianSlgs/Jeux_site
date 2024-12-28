@@ -35,8 +35,18 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   socket.on("joinRoom", (room, name) => {
+    // Vérifier si le joueur est déjà dans la room
+    const isPlayerAlreadyInRoom = rooms[room]?.players.some(player => 
+      player.name === name || player.id === socket.id
+    );
+
+    if (isPlayerAlreadyInRoom) {
+      socket.emit("error", "Vous êtes déjà connecté à cette partie");
+      return;
+    }
+
     if (rooms[room] && rooms[room].hasStarted) {
-      socket.emit("error", "The game has already started");
+      socket.emit("error", "Cette partie a déjà commencé. Veuillez choisir un autre numéro de session.");
       return;
     }
 
@@ -56,6 +66,9 @@ io.on("connection", (socket) => {
 
     rooms[room].players.push({ id: socket.id, name });
 
+    // Émettre un événement de confirmation de connexion
+    socket.emit("roomJoined");
+    
     io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
     io.to(room).emit("message", `${name} a rejoint la partie!`);
   });
@@ -96,20 +109,33 @@ io.on("connection", (socket) => {
       } else {
         setTimeout(() => {
           askNewQuestion(room);
-        }, 5000); // Pause de 5 secondes avant de poser la question suivante
+        }, 5000);
       }
     }
   });
 
   socket.on("nextQuestion", (room) => {
-    askNewQuestion(room); // Pose une nouvelle question
+    askNewQuestion(room);
   });
 
   socket.on("disconnect", () => {
     for (const room in rooms) {
       if (rooms[room]) {
-        rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
-        io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
+        const disconnectedPlayer = rooms[room].players.find(player => player.id === socket.id);
+        if (disconnectedPlayer) {
+          rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
+          io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
+          io.to(room).emit("message", `${disconnectedPlayer.name} a quitté la partie.`);
+          
+          // Si la room est vide, on la supprime
+          if (rooms[room].players.length === 0) {
+            delete rooms[room];
+          }
+          // Si c'était l'hôte qui s'est déconnecté et qu'il reste des joueurs
+          else if (rooms[room].host === socket.id && rooms[room].players.length > 0) {
+            rooms[room].host = rooms[room].players[0].id; // Le premier joueur devient l'hôte
+          }
+        }
       }
     }
     console.log("A user disconnected");
@@ -155,7 +181,7 @@ async function askNewQuestion(room) {
 
       setTimeout(() => {
         askNewQuestion(room);
-      }, 5000); // Pause de 5 secondes avant de poser la question suivante
+      }, 5000);
     }, 20000);
   } catch (err) {
     console.error("Error fetching questions:", err);
