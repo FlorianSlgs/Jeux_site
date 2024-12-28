@@ -124,16 +124,22 @@ io.on("connection", (socket) => {
         const disconnectedPlayer = rooms[room].players.find(player => player.id === socket.id);
         if (disconnectedPlayer) {
           rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
+          
+          // Informer les autres joueurs
           io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
           io.to(room).emit("message", `${disconnectedPlayer.name} a quitté la partie.`);
           
-          // Si la room est vide, on la supprime
+          // Si la room est vide
           if (rooms[room].players.length === 0) {
+            // Nettoyer le timeout s'il existe
+            if (rooms[room].questionTimeout) {
+              clearTimeout(rooms[room].questionTimeout);
+            }
             delete rooms[room];
           }
-          // Si c'était l'hôte qui s'est déconnecté et qu'il reste des joueurs
+          // Si c'était l'hôte qui s'est déconnecté
           else if (rooms[room].host === socket.id && rooms[room].players.length > 0) {
-            rooms[room].host = rooms[room].players[0].id; // Le premier joueur devient l'hôte
+            rooms[room].host = rooms[room].players[0].id;
           }
         }
       }
@@ -142,12 +148,22 @@ io.on("connection", (socket) => {
   });
 });
 
+// Dans server/app.js, modifiez la fonction askNewQuestion comme suit :
+
 async function askNewQuestion(room) {
-  if (!rooms[room] || rooms[room].players.length === 0) {
-    clearTimeout(rooms[room]?.questionTimeout);
-    if (rooms[room]) {
-      delete rooms[room];
+  // Vérification de sécurité au début de la fonction
+  if (!rooms[room]) {
+    console.log(`Room ${room} n'existe plus`);
+    return;
+  }
+
+  // Vérification des joueurs
+  if (rooms[room].players.length === 0) {
+    console.log(`Room ${room} est vide`);
+    if (rooms[room].questionTimeout) {
+      clearTimeout(rooms[room].questionTimeout);
     }
+    delete rooms[room];
     return;
   }
 
@@ -156,36 +172,50 @@ async function askNewQuestion(room) {
     const randomIndex = Math.floor(Math.random() * questions.length);
     const question = questions[randomIndex];
 
+    // Vérification supplémentaire avant d'accéder à rooms[room]
+    if (!rooms[room]) {
+      console.log(`Room ${room} a été supprimée pendant la requête`);
+      return;
+    }
+
     rooms[room].currentQuestion = question;
     const correctAnswerIndex = question.answers.findIndex(answer => answer.correct);
-
     rooms[room].correctAnswer = correctAnswerIndex;
     rooms[room].shouldAskNewQuestion = true;
 
+    // Envoi de la nouvelle question
     io.to(room).emit("newQuestion", {
       question: question.question,
       answers: question.answers.map(answer => answer.text),
       timer: 20,
     });
 
+    // Gestion du timeout avec vérification supplémentaire
     rooms[room].questionTimeout = setTimeout(() => {
-      io.to(room).emit("answerResult", {
-        playerName: "Personne",
-        isCorrect: false,
-        correctAnswer: rooms[room].correctAnswer,
-        scores: rooms[room].players.map(player => ({
-          name: player.name,
-          score: player.score || 0,
-        })),
-      });
+      // Vérification critique ici pour éviter l'erreur
+      if (rooms[room]) {
+        io.to(room).emit("answerResult", {
+          playerName: "Personne",
+          isCorrect: false,
+          correctAnswer: rooms[room].correctAnswer,
+          scores: rooms[room].players.map(player => ({
+            name: player.name,
+            score: player.score || 0,
+          })),
+        });
 
-      setTimeout(() => {
-        askNewQuestion(room);
-      }, 5000);
+        // Planification de la prochaine question
+        setTimeout(() => {
+          askNewQuestion(room);
+        }, 5000);
+      }
     }, 20000);
+
   } catch (err) {
     console.error("Error fetching questions:", err);
-    io.to(room).emit("error", "Failed to fetch questions from the database");
+    if (rooms[room]) {
+      io.to(room).emit("error", "Failed to fetch questions from the database");
+    }
   }
 }
 
