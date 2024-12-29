@@ -12,7 +12,7 @@ function Categories() {
       color: "from-blue-500 to-blue-700",
       description: "Questions variées sur divers sujets"
     },
-    {
+/*     {
       name: "Sciences",
       icon: "🔬",
       color: "from-green-500 to-green-700",
@@ -41,7 +41,7 @@ function Categories() {
       icon: "🎮",
       color: "from-purple-500 to-purple-700",
       description: "Films, séries, jeux vidéo"
-    }
+    } */
   ];
 
   const handleCategorySelect = (category) => {

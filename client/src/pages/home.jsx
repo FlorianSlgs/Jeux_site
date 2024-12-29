@@ -34,7 +34,7 @@ function Home() {
       {/* Features Section */}
       <div className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-center mb-12 text-indigo-600">
-          Pourquoi choisir notre Quiz Party ? 🏆
+          Pourquoi choisir notre quiz en ligne ? 🏆
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard 
@@ -59,7 +59,7 @@ function Home() {
       <div className="bg-white py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8 text-indigo-600">
-            Comment jouer à un quiz multijoueur en ligne avec ses amis ? 🤔
+            Comment jouer à un quiz multijoueur en ligne avec tes amis ou ta famille ? 🤔
           </h2>
           <div className="max-w-3xl mx-auto">
             <Accordion 
@@ -70,7 +70,7 @@ function Home() {
               <ol className="list-decimal pl-5 space-y-2">
                 <li>Cliquez sur "JOUER"</li>
                 <li>Choisissez une catégorie</li>
-                <li>Partagez le code de partie avec vos amis</li>
+                <li>Partagez le code de partie avec vos amis ou votre famille</li>
                 <li>Commencez à jouer ensemble !</li>
               </ol>
             </Accordion>
@@ -89,8 +89,8 @@ function Home() {
             isOpen={isOpen.faq}
             onClick={() => setIsOpen({...isOpen, faq: !isOpen.faq})}
           >
-            <p>Notre quiz interactif en temps réel permet de jouer jusqu'à 10 joueurs simultanément, 
-            idéal pour les soirées entre amis ou les jeux en ligne entre collègues.</p>
+            <p>Notre quiz interactif en temps réel permet de jouer à plusieurs simultanément, 
+            idéal pour les soirées entre amis ou les jeux en ligne entre collègues. Que ce soit un quiz à 4 joueurs, 6 joueurs, 2 joueurs, ou plus ou moins, ce quiz est fait pour vous.  </p>
           </Accordion>
         </div>
       </div>

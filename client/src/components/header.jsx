@@ -14,7 +14,7 @@ const Header = () => {
               alt="Site Logo" 
               className="h-10 w-10 object-cover" 
             />
-            <span className="text-2xl font-bold text-indigo-600">Jeux en ligne</span>
+            <span className="text-2xl font-bold text-indigo-600">Quiz à plusieurs</span>
           </Link>  
           </div>
         </div>
