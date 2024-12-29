@@ -10,7 +10,7 @@ const Header = () => {
           <div className="flex items-center space-x-4">
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="script-java.png"
+              src="idees.png"
               alt="Site Logo" 
               className="h-10 w-10 object-cover" 
             />

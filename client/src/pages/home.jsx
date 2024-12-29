@@ -15,7 +15,7 @@ function Home() {
       <div className="bg-gradient-to-b from-indigo-600 to-indigo-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Quiz Multijoueur En Ligne 🎮
+            Quiz à plusieurs En Ligne 🎮
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Défie tes amis dans des quiz interactifs en temps réel ! 
