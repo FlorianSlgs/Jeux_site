@@ -15,7 +15,7 @@ function Home() {
       <div className="bg-gradient-to-b from-indigo-600 to-indigo-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Quiz à plusieurs En Ligne 🎮
+            Quiz à plusieurs en Ligne 🎮
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Défie tes amis dans des quiz interactifs en temps réel ! 
@@ -70,7 +70,7 @@ function Home() {
               <ol className="list-decimal pl-5 space-y-2">
                 <li>Cliquez sur "JOUER"</li>
                 <li>Choisissez une catégorie</li>
-                <li>Partagez le code de partie avec vos amis ou votre famille</li>
+                <li>Partagez le code de la partie avec vos amis ou votre famille</li>
                 <li>Commencez à jouer ensemble !</li>
               </ol>
             </Accordion>
@@ -90,7 +90,7 @@ function Home() {
             onClick={() => setIsOpen({...isOpen, faq: !isOpen.faq})}
           >
             <p>Notre quiz interactif en temps réel permet de jouer à plusieurs simultanément, 
-            idéal pour les soirées entre amis ou les jeux en ligne entre collègues. Que ce soit un quiz à 4 joueurs, 6 joueurs, 2 joueurs, ou plus ou moins, ce quiz est fait pour vous.  </p>
+            idéal pour les soirées entre amis ou les jeux en ligne entre collègues. Que ce soit un quiz à 2 joueurs, 3 joueurs, 4 joueurs ou plus, ce quiz est fait pour vous.  </p>
           </Accordion>
         </div>
       </div>

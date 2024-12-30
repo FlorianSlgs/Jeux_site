@@ -174,7 +174,7 @@ function Quiz() {
     return (
       <div className="min-h-screen bg-gray-200 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz multijoueur💡</h1>
+          <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz en ligne</h1>
           <p className="pt-3 text-justify text-gray-700"><strong>Fonctionnement :</strong><br/>
           Pour créer une partie il suffit de rentrer un numéro de session et choisir un pseudo, les autres joueurs devront ensuite choisir le même numéro.</p>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -238,7 +238,7 @@ function Quiz() {
   return (
     <div className="min-h-screen bg-gray-200 flex items-center justify-center">  
       <div className="p-6">
-        <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz multijoueur💡</h1>
+        <h1 className="text-3xl font-bold text-center text-indigo-600">Quiz en ligne</h1>
         <p className="text-sm text-gray-500 text-center mt-2">Numéro de session: {room}</p>
         <ToastContainer />
         {question ? (
