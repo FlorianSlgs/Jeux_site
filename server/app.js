@@ -219,6 +219,12 @@ async function askNewQuestion(room) {
   }
 }
 
+// Route de la page d'accueil
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur le serveur de jeu!');
+});
+
+
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
