@@ -6,7 +6,7 @@ const HomeButton = () => {
     return (
     <button
         onClick={() => navigate('/')} // Navigue vers la page d'accueil
-        className="fixed top-4 left-4 p-2 bg-gray-100 hover:bg-gray-200 rounded-full shadow-md transition-all duration-300 ease-in-out"
+        className="fixed top-4 left-4 p-2 bg-gray-100 z-50 hover:bg-gray-200 rounded-full shadow-md transition-all duration-300 ease-in-out"
         title="Retour à l'accueil"
         >
         <svg 
