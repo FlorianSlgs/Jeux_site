@@ -3,7 +3,6 @@ import './quiz.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import io from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
 
 const socket = io(`${import.meta.env.VITE_API_URL}`);
 

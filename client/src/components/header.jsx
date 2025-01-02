@@ -11,7 +11,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-2">
             <img 
               src="idees.png"
-              alt="Site Logo" 
+              alt="Quiz à plusieurs" 
               className="h-10 w-10 object-cover" 
             />
             <span className="text-2xl font-bold text-indigo-600">Quiz multijoueur</span>
