@@ -3,10 +3,15 @@ import './quiz.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import io from 'socket.io-client';
+import { useLocation } from 'react-router-dom';
 
 const socket = io(`${import.meta.env.VITE_API_URL}`);
 
 function Quiz() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const category = queryParams.get('category');
+
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const [info, setInfo] = useState(false);
@@ -27,7 +32,7 @@ function Quiz() {
     e.preventDefault();
     if (name && room && !isConnecting) {
       setIsConnecting(true);
-      socket.emit('joinRoom', room, name);
+      socket.emit('joinRoom', room, name, category);
     }
   };
 
@@ -150,7 +155,7 @@ function Quiz() {
   };
 
   const handleStartGame = () => {
-    socket.emit('startGame', room);
+    socket.emit('startGame', room, category);
   };
 
   useEffect(() => {

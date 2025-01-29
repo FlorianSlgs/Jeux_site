@@ -12,7 +12,7 @@ function Categories() {
       color: "from-blue-500 to-blue-700",
       description: "Questions variées sur divers sujets"
     },
-/*     {
+    {
       name: "Sciences",
       icon: "🔬",
       color: "from-green-500 to-green-700",
@@ -41,18 +41,15 @@ function Categories() {
       icon: "🎮",
       color: "from-purple-500 to-purple-700",
       description: "Films, séries, jeux vidéo"
-    } */
+    }
   ];
 
   const handleCategorySelect = (category) => {
-    // Vous pouvez ajouter ici la logique pour naviguer vers la page du quiz
-    // avec la catégorie sélectionnée
     navigate(`/quiz?category=${encodeURIComponent(category.name)}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-200 py-12 px-4 sm:px-6 lg:px-8">
-
       <div className="max-w-7xl mx-auto">
         {/* Titre */}
         <div className="text-center mb-12">

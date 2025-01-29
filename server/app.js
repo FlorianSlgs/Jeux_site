@@ -17,24 +17,34 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB:", err));
 
-const quizSchema = new mongoose.Schema({
-  question: String,
-  answers: [
-    {
-      text: String,
-      correct: Boolean,
-    },
-  ],
-});
+// Définir des schémas pour chaque catégorie
+const createQuizModel = (category) => {
+  const quizSchema = new mongoose.Schema({
+    question: String,
+    answers: [
+      {
+        text: String,
+        correct: Boolean,
+      },
+    ],
+  });
+  return mongoose.model(category, quizSchema);
+};
 
-const Question = mongoose.model("Quiz", quizSchema);
+// Créer des modèles pour chaque catégorie
+const CultureGenerale = createQuizModel("quiz");
+const Sciences = createQuizModel("Sciences");
+const Histoire = createQuizModel("Histoire");
+const Geographie = createQuizModel("Geographie");
+const Sport = createQuizModel("sport");
+const Divertissement = createQuizModel("Divertissement");
 
 const rooms = {};
 
 io.on("connection", (socket) => {
   console.log("A user connected");
 
-  socket.on("joinRoom", (room, name) => {
+  socket.on("joinRoom", (room, name, category) => {
     // Vérifier si le joueur est déjà dans la room
     const isPlayerAlreadyInRoom = rooms[room]?.players.some(player => 
       player.name === name || player.id === socket.id
@@ -61,6 +71,7 @@ io.on("connection", (socket) => {
         shouldAskNewQuestion: true,
         hasStarted: false,
         host: socket.id,
+        category: category, // Enregistrer la catégorie
       };
     }
 
@@ -68,7 +79,7 @@ io.on("connection", (socket) => {
 
     // Émettre un événement de confirmation de connexion
     socket.emit("roomJoined");
-    
+
     io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
     io.to(room).emit("message", `${name} a rejoint la partie!`);
   });
@@ -124,11 +135,11 @@ io.on("connection", (socket) => {
         const disconnectedPlayer = rooms[room].players.find(player => player.id === socket.id);
         if (disconnectedPlayer) {
           rooms[room].players = rooms[room].players.filter(player => player.id !== socket.id);
-          
+
           // Informer les autres joueurs
           io.to(room).emit("playerList", rooms[room].players.map(player => player.name));
           io.to(room).emit("message", `${disconnectedPlayer.name} a quitté la partie.`);
-          
+
           // Si la room est vide
           if (rooms[room].players.length === 0) {
             // Nettoyer le timeout s'il existe
@@ -148,8 +159,27 @@ io.on("connection", (socket) => {
   });
 });
 
-// Dans server/app.js, modifiez la fonction askNewQuestion comme suit :
+// Fonction pour obtenir le modèle de la catégorie appropriée
+const getCategoryModel = (category) => {
+  switch (category) {
+    case "Culture Générale":
+      return CultureGenerale;
+    case "Sciences":
+      return Sciences;
+    case "Histoire":
+      return Histoire;
+    case "Géographie":
+      return Geographie;
+    case "Sport":
+      return Sport;
+    case "Divertissement":
+      return Divertissement;
+    default:
+      throw new Error("Catégorie inconnue");
+  }
+};
 
+// Fonction pour poser une nouvelle question
 async function askNewQuestion(room) {
   // Vérification de sécurité au début de la fonction
   if (!rooms[room]) {
@@ -168,7 +198,9 @@ async function askNewQuestion(room) {
   }
 
   try {
-    const questions = await Question.find();
+    const category = rooms[room].category;
+    const QuestionModel = getCategoryModel(category);
+    const questions = await QuestionModel.find();
     const randomIndex = Math.floor(Math.random() * questions.length);
     const question = questions[randomIndex];
 
@@ -223,7 +255,6 @@ async function askNewQuestion(room) {
 app.get('/', (req, res) => {
   res.send('Bienvenue sur le serveur de jeu!');
 });
-
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
