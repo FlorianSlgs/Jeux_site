@@ -27,10 +27,10 @@ const Footer = () => {
                         <div className="space-y-4">
                             <p>
                                 <span className="font-semibold">Éditeur du site</span><br/>
-                                Le site Quiz Multijoueur FR est édité par : Florian Salengros<br/>
+                                Le site Quiz Multijoueur FR est édité par : Quiz Multijoueur FR<br/>
                             </p>
                             <p>
-                                <span className="font-semibold">Nom de l’éditeur :</span> Florian Salengros<br/><br/>
+                                <span className="font-semibold">Nom de l’éditeur :</span> Quiz Multijoueur FR<br/><br/>
                                 <span className="font-semibold">Hébergement</span><br/>
                                 Le site est hébergé par : Render.com<br/>
                             </p>
