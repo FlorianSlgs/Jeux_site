@@ -27,12 +27,17 @@ function Quiz() {
   const [isHost, setIsHost] = useState(false);
   const [hasGameStarted, setHasGameStarted] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
-  
+  const [previousRoom, setPreviousRoom] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name && room && !isConnecting) {
       setIsConnecting(true);
+      if (previousRoom) {
+        socket.emit('leaveRoom', previousRoom);
+      }
       socket.emit('joinRoom', room, name, category);
+      setPreviousRoom(room); // Met à jour la room précédente
     }
   };
 
@@ -125,6 +130,15 @@ function Quiz() {
       setRoom('');
     });
 
+    socket.on('leaveRoom', () => {
+      setInfo(false); // Réinitialise l'état de la room
+    });
+
+    socket.on('disconnect', () => {
+      setCategory(null); // Réinitialise la catégorie lors de la déconnexion
+      setPreviousRoom(''); // Réinitialise la room précédente
+    });
+
     return () => {
       socket.off('playerList');
       socket.off('roomJoined');
@@ -134,6 +148,8 @@ function Quiz() {
       socket.off('answerResult');
       socket.off('gameOver');
       socket.off('error');
+      socket.off('leaveRoom');
+      socket.off('disconnect');
     };
   }, []);
 
