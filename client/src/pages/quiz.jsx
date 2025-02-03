@@ -267,15 +267,22 @@ function Quiz() {
                 <li key={index}>
                   <button
                     className={`w-full px-4 py-2 text-left rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors duration-300 ${
-                      questionEnded ? (
-                        correctAnswerIndex === index 
-                          ? "bg-green-200" 
-                          : selectedAnswerIndex === index 
-                            ? "bg-red-200"
-                            : "bg-gray-200"
-                      ) : hasAnswered && selectedAnswerIndex === index
-                        ? "bg-yellow-200"
-                        : "bg-gray-200 hover:bg-gray-300"
+                      questionEnded 
+                        ? (correctAnswerIndex === index 
+                            ? "bg-green-200" // Bonne réponse toujours en vert quand la question est terminée
+                            : selectedAnswerIndex === index 
+                              ? "bg-red-200" // Réponse sélectionnée incorrecte en rouge
+                              : "bg-gray-200" // Autres réponses en gris
+                          )
+                        : hasAnswered 
+                          ? (selectedAnswerIndex === index 
+                              ? (selectedAnswerIndex === correctAnswerIndex 
+                                  ? "bg-green-200" // Réponse sélectionnée correcte en vert
+                                  : "bg-red-200"   // Réponse sélectionnée incorrecte en rouge
+                                )
+                              : "bg-gray-200"      // Autres réponses en gris
+                            )
+                          : "bg-gray-200 hover:bg-gray-300" // État normal avant réponse
                     }`}
                     onClick={() => handleAnswer(index)}
                     disabled={hasAnswered || questionEnded}
