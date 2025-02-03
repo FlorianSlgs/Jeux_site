@@ -269,8 +269,6 @@ function endQuestion(room) {
     console.log(`Tentative de terminer une question inexistante ou déjà terminée dans la room ${room}`);
     return;
   }
-
-  console.log(`Fin de question dans la room ${room}`);
   
   clearAllTimeouts(room);
 

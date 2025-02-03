@@ -29,6 +29,7 @@ function Quiz() {
   const [previousRoom, setPreviousRoom] = useState('');
   const [hasAnswered, setHasAnswered] = useState(false);
   const [questionEnded, setQuestionEnded] = useState(false);
+  const [playerAnswers, setPlayerAnswers] = useState(new Map());
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -77,6 +78,11 @@ function Quiz() {
       setCorrectAnswerIndex(null);
       setHasAnswered(false);
       setQuestionEnded(false);
+      setPlayerAnswers(new Map());
+    });
+
+    socket.on('playerAnswered', (data) => {
+      setPlayerAnswers(prev => new Map(prev).set(data.playerName, data.isCorrect));
     });
 
     socket.on('questionEnded', (data) => {
@@ -276,9 +282,18 @@ function Quiz() {
               {scores.map((player, index) => (
                 <p
                   key={index}
-                  className="text-sm font-medium text-gray-700 flex justify-between"
+                  className={`
+                    text-sm font-medium flex justify-between p-2 rounded
+                    ${questionEnded && playerAnswers.has(player.name)
+                      ? playerAnswers.get(player.name)
+                        ? 'text-green-600 bg-green-100'
+                        : 'text-red-600 bg-red-100'
+                      : 'text-gray-700'
+                    }
+                  `}
                 >
-                  <span>{player.name}</span> <span>{player.score} / 5</span>
+                  <span>{player.name}</span>
+                  <span>{player.score} / 5</span>
                 </p>
               ))}
             </div>
