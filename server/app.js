@@ -129,10 +129,11 @@ io.on("connection", (socket) => {
       // Mettre à jour le score
       currentPlayer.score = (currentPlayer.score || 0) + (isCorrect ? 1 : -1);
   
-      // Informer tous les joueurs de la réponse
+      // Informer tous les joueurs de la réponse avec l'index de la bonne réponse
       io.to(room).emit("playerAnswered", {
         playerName: currentPlayer.name,
-        isCorrect
+        isCorrect,
+        answerIndex: isCorrect ? correctAnswer : null // Envoyer l'index de la bonne réponse seulement si la réponse est correcte
       });
   
       // Vérifier si tous les joueurs ont répondu
@@ -177,7 +178,7 @@ io.on("connection", (socket) => {
     }
     console.log("A user disconnected");
   });
-  
+
 });
 
 async function askNewQuestion(room) {

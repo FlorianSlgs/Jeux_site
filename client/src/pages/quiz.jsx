@@ -80,9 +80,13 @@ function Quiz() {
     });
 
     socket.on('playerAnswered', (data) => {
+      // Mettre à jour le correctAnswerIndex si la réponse est correcte
+      if (data.isCorrect) {
+        setCorrectAnswerIndex(data.answerIndex);
+      }
       toast(`${data.playerName} a ${data.isCorrect ? 'bien' : 'mal'} répondu.`, {
         position: "bottom-center",
-        autoClose: 2000,
+        autoClose: 500,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: false,
@@ -93,9 +97,14 @@ function Quiz() {
     });
 
     socket.on('questionEnded', (data) => {
-      setCorrectAnswerIndex(data.correctAnswer);
+      setCorrectAnswerIndex(data.correctAnswer); // S'assurer que ceci est bien défini
       setQuestionEnded(true);
       setScores(data.scores);
+      
+      // Forcer l'affichage de la bonne réponse même pour ceux qui n'ont pas répondu
+      if (!hasAnswered) {
+        setHasAnswered(true); // Marquer comme répondu pour que la logique d'affichage s'applique
+      }
       
       setTimeout(() => {
         setQuestionEnded(false);
@@ -267,22 +276,13 @@ function Quiz() {
                 <li key={index}>
                   <button
                     className={`w-full px-4 py-2 text-left rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors duration-300 ${
-                      questionEnded 
-                        ? (correctAnswerIndex === index 
-                            ? "bg-green-200" // Bonne réponse toujours en vert quand la question est terminée
-                            : selectedAnswerIndex === index 
+                      (hasAnswered || questionEnded) // Ajout de questionEnded dans la condition
+                        ? (index === correctAnswerIndex
+                            ? "bg-green-200" // Bonne réponse toujours en vert
+                            : selectedAnswerIndex === index
                               ? "bg-red-200" // Réponse sélectionnée incorrecte en rouge
-                              : "bg-gray-200" // Autres réponses en gris
-                          )
-                        : hasAnswered 
-                          ? (selectedAnswerIndex === index 
-                              ? (selectedAnswerIndex === correctAnswerIndex 
-                                  ? "bg-green-200" // Réponse sélectionnée correcte en vert
-                                  : "bg-red-200"   // Réponse sélectionnée incorrecte en rouge
-                                )
-                              : "bg-gray-200"      // Autres réponses en gris
-                            )
-                          : "bg-gray-200 hover:bg-gray-300" // État normal avant réponse
+                              : "bg-gray-200") // Autres réponses en gris
+                        : "bg-gray-200 hover:bg-gray-300"
                     }`}
                     onClick={() => handleAnswer(index)}
                     disabled={hasAnswered || questionEnded}
