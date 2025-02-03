@@ -17,7 +17,6 @@ function Quiz() {
   const [info, setInfo] = useState(false);
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState([]);
-  const [answered, setAnswered] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [scores, setScores] = useState([]);
   const [winner, setWinner] = useState('');
@@ -28,6 +27,8 @@ function Quiz() {
   const [hasGameStarted, setHasGameStarted] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [previousRoom, setPreviousRoom] = useState('');
+  const [hasAnswered, setHasAnswered] = useState(false);
+  const [questionEnded, setQuestionEnded] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,7 +38,7 @@ function Quiz() {
         socket.emit('leaveRoom', previousRoom);
       }
       socket.emit('joinRoom', room, name, category);
-      setPreviousRoom(room); // Met à jour la room précédente
+      setPreviousRoom(room);
     }
   };
 
@@ -71,43 +72,35 @@ function Quiz() {
     socket.on('newQuestion', (data) => {
       setQuestion(data.question);
       setOptions(data.answers);
-      setAnswered(false);
       setSeconds(data.timer);
       setSelectedAnswerIndex(null);
       setCorrectAnswerIndex(null);
+      setHasAnswered(false);
+      setQuestionEnded(false);
     });
 
-    socket.on('answerResult', (data) => {
-      setCorrectAnswerIndex(data.correctAnswer);
-      setAnswered(true);
-      if (data.isCorrect) {
-        toast(`${data.playerName} a trouvé la bonne réponse.`, {
-          position: "bottom-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      };
-      if (!data.isCorrect) {
-        toast(`${data.playerName} s'est trompé.`, {
-          position: "bottom-center",
-          autoClose: 2000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      };
-      setScores(data.scores);
+    socket.on('playerAnswered', (data) => {
+      toast(`${data.playerName} a ${data.isCorrect ? 'bien' : 'mal'} répondu.`, {
+        position: "bottom-center",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    });
 
+    socket.on('questionEnded', (data) => {
+      setCorrectAnswerIndex(data.correctAnswer);
+      setQuestionEnded(true);
+      setScores(data.scores);
+      
       setTimeout(() => {
-        socket.emit('nextQuestion', room);
+        setQuestionEnded(false);
+        setHasAnswered(false);
+        setSelectedAnswerIndex(null);
       }, 5000);
     });
 
@@ -131,12 +124,11 @@ function Quiz() {
     });
 
     socket.on('leaveRoom', () => {
-      setInfo(false); // Réinitialise l'état de la room
+      setInfo(false);
     });
 
     socket.on('disconnect', () => {
-      setCategory(null); // Réinitialise la catégorie lors de la déconnexion
-      setPreviousRoom(''); // Réinitialise la room précédente
+      setPreviousRoom('');
     });
 
     return () => {
@@ -145,7 +137,8 @@ function Quiz() {
       socket.off('message');
       socket.off('gameStarted');
       socket.off('newQuestion');
-      socket.off('answerResult');
+      socket.off('playerAnswered');
+      socket.off('questionEnded');
       socket.off('gameOver');
       socket.off('error');
       socket.off('leaveRoom');
@@ -154,19 +147,19 @@ function Quiz() {
   }, []);
 
   useEffect(() => {
-    if (seconds > 0 && !answered) {
+    if (seconds > 0 && !questionEnded) {
       const timerId = setInterval(() => {
         setSeconds((prevSeconds) => prevSeconds - 1);
       }, 1000);
       return () => clearInterval(timerId);
     }
-  }, [seconds, answered]);
+  }, [seconds, questionEnded]);
 
   const handleAnswer = (answerIndex) => {
-    if (!answered) {
+    if (!hasAnswered && !questionEnded) {
       setSelectedAnswerIndex(answerIndex);
+      setHasAnswered(true);
       socket.emit('submitAnswer', room, answerIndex);
-      setAnswered(true);
     }
   };
 
@@ -233,8 +226,8 @@ function Quiz() {
           <h1 className="text-3xl font-bold text-center text-indigo-600">Salle d'attente</h1>
           <p className="text-center text-gray-700">Numéro de session: {room}</p>
           <p className="text-justify text-gray-700"><strong>Règles du jeu :</strong><br/>
-          La question est clôturée dès qu'un joueur donne une réponse.
-          Une bonne réponse rapporte 1 point, tandis qu'une mauvaise réponse fait perdre 1 point.<br/>
+          Chaque joueur dispose de 10 secondes pour répondre à la question.
+          Une bonne réponse rapporte 1 point, une mauvaise réponse fait perdre 1 point, et l'absence de réponse ne rapporte aucun point.<br/>
           <strong>Le premier joueur à atteindre 5 points remporte la partie.</strong></p>
           <ToastContainer />
           <ul className="mt-4">
@@ -274,16 +267,18 @@ function Quiz() {
                 <li key={index}>
                   <button
                     className={`w-full px-4 py-2 text-left rounded-lg focus:ring-2 focus:ring-indigo-500 transition-colors duration-300 ${
-                      answered ? (
+                      questionEnded ? (
                         correctAnswerIndex === index 
                           ? "bg-green-200" 
                           : selectedAnswerIndex === index 
                             ? "bg-red-200"
                             : "bg-gray-200"
-                      ) : "bg-gray-200 hover:bg-gray-300"
+                      ) : hasAnswered && selectedAnswerIndex === index
+                        ? "bg-yellow-200"
+                        : "bg-gray-200 hover:bg-gray-300"
                     }`}
                     onClick={() => handleAnswer(index)}
-                    disabled={answered}
+                    disabled={hasAnswered || questionEnded}
                   >
                     {answer}
                   </button>
