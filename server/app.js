@@ -57,7 +57,21 @@ function getCategoryModel(category) {
     default:
       return CultureGenerale; // Retourne le modèle par défaut si la catégorie n'est pas reconnue
   }
-};
+}
+
+// Fonction pour nettoyer tous les timeouts
+function clearAllTimeouts(room) {
+  if (rooms[room]) {
+    if (rooms[room].questionTimeout) {
+      clearTimeout(rooms[room].questionTimeout);
+      rooms[room].questionTimeout = null;
+    }
+    if (rooms[room].nextQuestionTimeout) {
+      clearTimeout(rooms[room].nextQuestionTimeout);
+      rooms[room].nextQuestionTimeout = null;
+    }
+  }
+}
 
 const rooms = {};
 
@@ -92,9 +106,9 @@ io.on("connection", (socket) => {
         hasStarted: false,
         host: socket.id,
         category: category,
-        playerAnswers: new Map(), // Ajout pour suivre les réponses des joueurs
-        questionInProgress: false, // Nouvelle propriété pour suivre l'état de la question
-        nextQuestionTimeout: null  // Nouvelle propriété pour gérer le délai entre les questions
+        playerAnswers: new Map(),
+        questionInProgress: false,
+        nextQuestionTimeout: null
       };
     }
 
@@ -129,11 +143,10 @@ io.on("connection", (socket) => {
       // Mettre à jour le score
       currentPlayer.score = (currentPlayer.score || 0) + (isCorrect ? 1 : -1);
   
-      // Informer tous les joueurs de la réponse avec l'index de la bonne réponse
+      // Informer tous les joueurs de la réponse
       io.to(room).emit("playerAnswered", {
         playerName: currentPlayer.name,
-        isCorrect,
-        answerIndex: isCorrect ? correctAnswer : null // Envoyer l'index de la bonne réponse seulement si la réponse est correcte
+        isCorrect
       });
   
       // Vérifier si tous les joueurs ont répondu
@@ -149,7 +162,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("nextQuestion", (room) => {
-    askNewQuestion(room);
+    if (rooms[room] && !rooms[room].questionInProgress) {
+      askNewQuestion(room);
+    }
   });
 
   socket.on("disconnect", () => {
@@ -163,22 +178,25 @@ io.on("connection", (socket) => {
           io.to(room).emit("message", `${disconnectedPlayer.name} a quitté la partie.`);
   
           if (rooms[room].players.length === 0) {
-            if (rooms[room].questionTimeout) {
-              clearTimeout(rooms[room].questionTimeout);
-            }
-            if (rooms[room].nextQuestionTimeout) {
-              clearTimeout(rooms[room].nextQuestionTimeout);
-            }
+            clearAllTimeouts(room);
             delete rooms[room];
           } else if (rooms[room].host === socket.id && rooms[room].players.length > 0) {
             rooms[room].host = rooms[room].players[0].id;
+            // Si une question est en cours, vérifier si tous les joueurs restants ont répondu
+            if (rooms[room].questionInProgress) {
+              const allRemainingPlayersAnswered = rooms[room].players.every(player => 
+                rooms[room].playerAnswers.has(player.id)
+              );
+              if (allRemainingPlayersAnswered) {
+                endQuestion(room);
+              }
+            }
           }
         }
       }
     }
     console.log("A user disconnected");
   });
-
 });
 
 async function askNewQuestion(room) {
@@ -189,12 +207,7 @@ async function askNewQuestion(room) {
 
   if (rooms[room].players.length === 0) {
     console.log(`Room ${room} est vide`);
-    if (rooms[room].questionTimeout) {
-      clearTimeout(rooms[room].questionTimeout);
-    }
-    if (rooms[room].nextQuestionTimeout) {
-      clearTimeout(rooms[room].nextQuestionTimeout);
-    }
+    clearAllTimeouts(room);
     delete rooms[room];
     return;
   }
@@ -207,6 +220,10 @@ async function askNewQuestion(room) {
 
   try {
     rooms[room].questionInProgress = true;
+    
+    // Nettoyer TOUS les timeouts avant de commencer une nouvelle question
+    clearAllTimeouts(room);
+
     const category = rooms[room].category;
     const QuestionModel = getCategoryModel(category);
     const questions = await QuestionModel.find();
@@ -216,14 +233,6 @@ async function askNewQuestion(room) {
     if (!rooms[room]) {
       console.log(`Room ${room} a été supprimée pendant la requête`);
       return;
-    }
-
-    // Nettoyer les timeouts précédents
-    if (rooms[room].questionTimeout) {
-      clearTimeout(rooms[room].questionTimeout);
-    }
-    if (rooms[room].nextQuestionTimeout) {
-      clearTimeout(rooms[room].nextQuestionTimeout);
     }
 
     // Réinitialiser les réponses des joueurs pour la nouvelle question
@@ -240,10 +249,11 @@ async function askNewQuestion(room) {
 
     // Définir le timeout pour la fin de la question
     rooms[room].questionTimeout = setTimeout(() => {
-      if (rooms[room]) {
+      if (rooms[room] && rooms[room].questionInProgress) {
+        console.log(`Question terminée par timeout dans la room ${room}`);
         endQuestion(room);
       }
-    }, 10000); // 10 secondes
+    }, 10000);
 
   } catch (err) {
     console.error("Error fetching questions:", err);
@@ -255,12 +265,18 @@ async function askNewQuestion(room) {
 }
 
 function endQuestion(room) {
-  if (!rooms[room]) return;
+  if (!rooms[room] || !rooms[room].questionInProgress) {
+    console.log(`Tentative de terminer une question inexistante ou déjà terminée dans la room ${room}`);
+    return;
+  }
+
+  console.log(`Fin de question dans la room ${room}`);
+  
+  clearAllTimeouts(room);
 
   // Appliquer les scores pour les joueurs qui n'ont pas répondu
   rooms[room].players.forEach(player => {
     if (!rooms[room].playerAnswers.has(player.id)) {
-      // Pas de réponse = 0 point
       player.score = player.score || 0;
     }
   });
