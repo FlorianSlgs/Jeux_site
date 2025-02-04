@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdComponent from '../components/adsterra';
+import AdsterraAd from "../components/AdsterraAd";
 
 function Home() {
   const navigate = useNavigate();
@@ -29,8 +29,8 @@ function Home() {
           >
             JOUER MAINTENANT 🎯
           </button>
-          <AdComponent />
         </div>
+        <AdsterraAd />
       </div>
         
       
