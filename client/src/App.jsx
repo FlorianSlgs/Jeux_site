@@ -6,7 +6,7 @@ import Home from './pages/home';
 import Header from './components/header';
 import Footer from './components/footer';
 import HomeButton from './components/homeButton';
-import AdBanner from '../components/AdBanner';
+import AdBanner from './components/AdBanner';
  
 const App = () => {
   return (
