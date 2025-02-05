@@ -6,7 +6,6 @@ import Home from './pages/home';
 import Header from './components/header';
 import Footer from './components/footer';
 import HomeButton from './components/homeButton';
-import AdBanner from './components/AdBanner';
  
 const App = () => {
   return (
@@ -14,7 +13,6 @@ const App = () => {
       <div>
         <Header />
         <HomeButton />
-        <AdBanner/>
 
           <Routes>
             <Route path="/quiz" element={<Quiz />} />
@@ -28,5 +26,4 @@ const App = () => {
   );
 };
 
-export default App;
-
+export default App;s
