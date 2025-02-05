@@ -42,10 +42,6 @@ const Footer = () => {
                                 <span className="font-semibold">Propriété intellectuelle</span><br/>
                                 L’ensemble des éléments du site (textes, images, logos, design, quiz) sont protégés par le droit de la propriété intellectuelle et ne peuvent être reproduits sans autorisation.<br/>
                             </p>
-                            <p>
-                                <span className="font-semibold">Publicité</span><br/>
-                                Le site utilise Google AdSense pour afficher des publicités.<br/>
-                            </p>
                         </div>
                         <button 
                             className="mt-4 bg-indigo-900 text-white py-2 px-4 rounded" 
