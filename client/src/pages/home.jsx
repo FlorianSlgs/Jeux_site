@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NativeBanner from '../components/nativeBanner';
 
 function Home() {
   const navigate = useNavigate();
@@ -29,8 +28,6 @@ function Home() {
           >
             JOUER MAINTENANT 🎯
           </button>
-
-          <NativeBanner/>
 
         </div>
       </div>
