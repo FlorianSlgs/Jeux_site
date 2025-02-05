@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import React, { useEffect } from 'react';
 
 const AdsterraAd = () => {
   useEffect(() => {
-    // 1️⃣ Créer un script pour la configuration
-    const scriptConfig = document.createElement("script");
-    scriptConfig.type = "text/javascript";
-    scriptConfig.innerHTML = `
+    // Crée le premier script pour atOptions
+    const atScript = document.createElement('script');
+    atScript.type = 'text/javascript';
+    atScript.innerHTML = `
       atOptions = {
         'key' : 'c6bd1332f58177333dd6b90cb11a7fe9',
         'format' : 'iframe',
@@ -14,26 +14,27 @@ const AdsterraAd = () => {
         'params' : {}
       };
     `;
-    document.body.appendChild(scriptConfig);
 
-    // 2️⃣ Charger le script d'Adsterra
-    const scriptAd = document.createElement("script");
-    scriptAd.type = "text/javascript";
-    scriptAd.src = "//www.highperformanceformat.com/c6bd1332f58177333dd6b90cb11a7fe9/invoke.js";
-    scriptAd.async = true;
-    document.body.appendChild(scriptAd);
+    // Crée le second script pour invoquer le script externe
+    const invokeScript = document.createElement('script');
+    invokeScript.type = 'text/javascript';
+    invokeScript.src = 'https://www.highperformanceformat.com/c6bd1332f58177333dd6b90cb11a7fe9/invoke.js';
 
-    // 🧹 Nettoyage lors du démontage du composant
+    // Ajoute les scripts au DOM
+    document.body.appendChild(atScript);
+    document.body.appendChild(invokeScript);
+
+    // Nettoyage des scripts après le démontage du composant
     return () => {
-      document.body.removeChild(scriptConfig);
-      document.body.removeChild(scriptAd);
+      document.body.removeChild(atScript);
+      document.body.removeChild(invokeScript);
     };
   }, []);
 
   return (
-    <div style={{ textAlign: "center", margin: "20px 0" }}>
-      <h3>Publicité :</h3>
-      <div id="adsterra-container" style={{ width: 468, height: 60 }}></div>
+    <div>
+      {/* La bannière sera insérée par les scripts */}
+      <div id="ad-container"></div>
     </div>
   );
 };
