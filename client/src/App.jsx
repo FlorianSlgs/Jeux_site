@@ -14,13 +14,14 @@ const App = () => {
       <div>
         <Header />
         <HomeButton />
+        <AdBanner/>
 
           <Routes>
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/" element={<Home />} />
           </Routes>
-        <AdBanner/>
+        
         <Footer />
       </div>
     </Router>
