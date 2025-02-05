@@ -6,6 +6,7 @@ import Home from './pages/home';
 import Header from './components/header';
 import Footer from './components/footer';
 import HomeButton from './components/homeButton';
+import AdBanner from '../components/AdBanner';
  
 const App = () => {
   return (
@@ -19,7 +20,7 @@ const App = () => {
             <Route path="/categories" element={<Categories />} />
             <Route path="/" element={<Home />} />
           </Routes>
-        
+        <AdBanner/>
         <Footer />
       </div>
     </Router>

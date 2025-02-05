@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdBanner from '../components/AdBanner';
 
 function Home() {
   const navigate = useNavigate();
@@ -29,9 +28,6 @@ function Home() {
           >
             JOUER MAINTENANT 🎯
           </button>
-
-          <AdBanner />
-
         </div>
       </div>
         
