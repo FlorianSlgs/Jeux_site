@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 function Categories() {
   const navigate = useNavigate();
@@ -50,6 +51,10 @@ function Categories() {
 
   return (
     <div className="min-h-screen bg-gray-200 py-12 px-4 sm:px-6 lg:px-8">
+      <Helmet>
+        <meta name="description" content="Choisissez le thème du quiz multijoueur : géographie, divertissement, histoire, sport, science et culture générale." />
+        <title>Choisissez le thème de votre quiz multijoueur</title>
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Titre */}
         <div className="text-center mb-12">

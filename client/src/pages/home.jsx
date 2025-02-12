@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 function Home() {
   const navigate = useNavigate();
@@ -11,6 +12,10 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gray-200">
+      <Helmet>
+        <title>Quiz multijoueur en ligne à plusieurs</title>
+        <meta name="description" content="Quiz multijoueur en ligne : défie tes amis dans des quiz interactifs en temps réel. Idéal pour des soirées entre amis, en famille ou entre collègues." />
+      </Helmet>
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-indigo-600 to-indigo-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
