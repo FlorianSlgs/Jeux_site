@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 require('dotenv').config();
 const app = express();
 
+app.use(require('prerender-node').set('prerenderToken', 'mzZBfjnhtM4vNul3mZ53'));
+
 const server = http.createServer(app);
 app.use(cors());
 const io = new Server(server, { cors: { origin: "*" } });
