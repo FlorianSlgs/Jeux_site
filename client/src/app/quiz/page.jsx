@@ -10,11 +10,18 @@ let socket;
 
 const initSocket = () => {
   if (!socket) {
-    socket = io(process.env.NEXT_PUBLIC_API_URL, {
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL;
+    console.log('Attempting to connect to:', socketUrl);
+
+    socket = io(socketUrl, {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
+      secure: true,
+      rejectUnauthorized: false,
+      withCredentials: true,
+      timeout: 10000
     });
 
     socket.on('connect', () => {

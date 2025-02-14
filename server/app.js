@@ -13,8 +13,9 @@ const io = new Server(server, {
     origin: [
       "https://quiz-multijoueur.fr",
       "https://www.quiz-multijoueur.fr",
-      "http://localhost:3000"
+      "http://localhost:3000",
     ],
+    credentials: true,
     methods: ["GET", "POST"] // Spécifiez les méthodes HTTP autorisées
   }
 });
