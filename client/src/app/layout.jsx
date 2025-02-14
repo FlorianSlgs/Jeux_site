@@ -4,7 +4,11 @@ export const metadata = {
   keywords:
   "quiz, multijoueur, en ligne, jeu de quiz, soirées entre amis, famille, collègues, interactif, temps réel, à plusieurs, meilleur quiz",
   robots: "index, follow",
-  viewport: "width=device-width, initial-scale=1.0",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 import "./globals.css";
