@@ -5,7 +5,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
-import { Suspense } from 'react'
 
 let socket;
 
@@ -30,12 +29,14 @@ const initSocket = () => {
 };
 
 export default function Quiz() {
-  const searchParams = useSearchParams();
   const [category, setCategory] = useState(null);
+  const searchParams = useSearchParams();
 
+  // Move the searchParams.get into useEffect to avoid hydration issues
   useEffect(() => {
-    const categoryParam = searchParams.get('category');
-    setCategory(categoryParam);
+    if (searchParams) {
+      setCategory(searchParams.get('category'));
+    }
   }, [searchParams]);
 
   const [name, setName] = useState('');
@@ -325,14 +326,16 @@ export default function Quiz() {
               {scores.map((player, index) => (
                 <p
                   key={index}
-                  className={`text-sm font-medium flex justify-between p-2 rounded
+                  className={`
+                    text-sm font-medium flex justify-between p-2 rounded
                     ${questionEnded && playerAnswers.has(player.name)
                       ? playerAnswers.get(player.name)
                         ? 'text-green-600 bg-green-100'
                         : 'text-red-600 bg-red-100'
                       : 'text-gray-700'
                     }
-                  `}>
+                  `}
+                >
                   <span>{player.name}</span>
                   <span>{player.score} / 5</span>
                 </p>
