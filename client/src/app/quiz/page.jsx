@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
+import { Suspense } from 'react'
 
 let socket;
 
@@ -30,7 +31,9 @@ const initSocket = () => {
 
 export default function Quiz() {
   const searchParams = useSearchParams();
-  const category = searchParams.get('category');
+  <Suspense>
+    const category = searchParams.get('category');
+  </Suspense>
 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
