@@ -1,16 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import './quiz.css';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
-import { useLocation } from 'react-router-dom';
 
-const socket = io(`${import.meta.env.VITE_API_URL}`);
+let socket;
 
-function Quiz() {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const category = queryParams.get('category');
+const initSocket = () => {
+  if (!socket) {
+    socket = io(process.env.NEXT_PUBLIC_API_URL, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      transports: ['websocket'],
+    });
+
+    socket.on('connect', () => {
+      console.log('Socket connected successfully!');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+  }
+  return socket;
+};
+
+export default function Quiz() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
@@ -31,30 +51,22 @@ function Quiz() {
   const [questionEnded, setQuestionEnded] = useState(false);
   const [playerAnswers, setPlayerAnswers] = useState(new Map());
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (name && room && !isConnecting) {
-      setIsConnecting(true);
-      if (previousRoom) {
-        socket.emit('leaveRoom', previousRoom);
-      }
-      socket.emit('joinRoom', room, name, category);
-      setPreviousRoom(room);
-    }
-  };
-
   useEffect(() => {
+    socket = initSocket();
+
     socket.on('playerList', (players) => {
+      console.log('Received player list:', players);
       setPlayers(players);
     });
 
     socket.on('roomJoined', () => {
+      console.log('Room joined successfully');
       setIsConnecting(false);
       setInfo(true);
     });
 
     socket.on('message', (message) => {
-      toast(`${message}`, {
+      toast(message, {
         position: "top-right",
         autoClose: 1000,
         hideProgressBar: true,
@@ -67,10 +79,12 @@ function Quiz() {
     });
 
     socket.on('gameStarted', () => {
+      console.log('Game started');
       setHasGameStarted(true);
     });
 
     socket.on('newQuestion', (data) => {
+      console.log('New question received:', data);
       setQuestion(data.question);
       setOptions(data.answers);
       setSeconds(data.timer);
@@ -82,10 +96,15 @@ function Quiz() {
     });
 
     socket.on('playerAnswered', (data) => {
-      setPlayerAnswers(prev => new Map(prev).set(data.playerName, data.isCorrect));
+      setPlayerAnswers(prev => {
+        const newMap = new Map(prev);
+        newMap.set(data.playerName, data.isCorrect);
+        return newMap;
+      });
     });
 
     socket.on('questionEnded', (data) => {
+      console.log('Question ended:', data);
       setCorrectAnswerIndex(data.correctAnswer);
       setQuestionEnded(true);
       setScores(data.scores);
@@ -98,6 +117,7 @@ function Quiz() {
     });
 
     socket.on('gameOver', (data) => {
+      console.log('Game over, winner:', data.winner);
       setWinner(data.winner);
     });
 
@@ -121,21 +141,25 @@ function Quiz() {
     });
 
     socket.on('disconnect', () => {
+      console.log('Socket disconnected');
       setPreviousRoom('');
     });
 
+    // Cleanup function
     return () => {
-      socket.off('playerList');
-      socket.off('roomJoined');
-      socket.off('message');
-      socket.off('gameStarted');
-      socket.off('newQuestion');
-      socket.off('playerAnswered');
-      socket.off('questionEnded');
-      socket.off('gameOver');
-      socket.off('error');
-      socket.off('leaveRoom');
-      socket.off('disconnect');
+      if (socket) {
+        socket.off('playerList');
+        socket.off('roomJoined');
+        socket.off('message');
+        socket.off('gameStarted');
+        socket.off('newQuestion');
+        socket.off('playerAnswered');
+        socket.off('questionEnded');
+        socket.off('gameOver');
+        socket.off('error');
+        socket.off('leaveRoom');
+        socket.off('disconnect');
+      }
     };
   }, []);
 
@@ -148,6 +172,25 @@ function Quiz() {
     }
   }, [seconds, questionEnded]);
 
+  useEffect(() => {
+    if (players.length > 0 && players[0] === name) {
+      setIsHost(true);
+    }
+  }, [players, name]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name && room && !isConnecting) {
+      console.log('Attempting to join room:', room);
+      setIsConnecting(true);
+      if (previousRoom) {
+        socket.emit('leaveRoom', previousRoom);
+      }
+      socket.emit('joinRoom', room, name, category);
+      setPreviousRoom(room);
+    }
+  };
+
   const handleAnswer = (answerIndex) => {
     if (!hasAnswered && !questionEnded) {
       setSelectedAnswerIndex(answerIndex);
@@ -159,12 +202,6 @@ function Quiz() {
   const handleStartGame = () => {
     socket.emit('startGame', room, category);
   };
-
-  useEffect(() => {
-    if (players.length > 0 && players[0] === name) {
-      setIsHost(true);
-    }
-  }, [players, name]);
 
   if (winner) {
     return (
@@ -216,11 +253,11 @@ function Quiz() {
     return (
       <div className="min-h-screen bg-gray-200 flex items-center justify-center"> 
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center text-indigo-600">Salle d'attente</h1>
+          <h1 className="text-3xl font-bold text-center text-indigo-600">Salle d&apos;attente</h1>
           <p className="text-center text-gray-700">Numéro de session: {room}</p>
           <p className="text-justify text-gray-700"><strong>Règles du jeu :</strong><br/>
           Chaque joueur dispose de 10 secondes pour répondre à la question.
-          Une bonne réponse rapporte 1 point, une mauvaise réponse fait perdre 1 point, et l'absence de réponse ne rapporte aucun point.<br/>
+          Une bonne réponse rapporte 1 point, une mauvaise réponse fait perdre 1 point, et l&apos;absence de réponse ne rapporte aucun point.<br/>
           <strong>Le premier joueur à atteindre 5 points remporte la partie.</strong></p>
           <ToastContainer />
           <ul className="mt-4">
@@ -305,5 +342,3 @@ function Quiz() {
     </div>
   );
 }
-
-export default Quiz;
