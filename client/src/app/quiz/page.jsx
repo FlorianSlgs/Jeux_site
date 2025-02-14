@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSearchParams } from 'next/navigation';
@@ -28,16 +28,9 @@ const initSocket = () => {
   return socket;
 };
 
-export default function Quiz() {
-  const [category, setCategory] = useState(null);
+function QuizContent() {
   const searchParams = useSearchParams();
-
-  // Move the searchParams.get into useEffect to avoid hydration issues
-  useEffect(() => {
-    if (searchParams) {
-      setCategory(searchParams.get('category'));
-    }
-  }, [searchParams]);
+  const category = searchParams.get('category');
 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
@@ -152,7 +145,6 @@ export default function Quiz() {
       setPreviousRoom('');
     });
 
-    // Cleanup function
     return () => {
       if (socket) {
         socket.off('playerList');
@@ -347,5 +339,20 @@ export default function Quiz() {
         )}
       </div>
     </div>
+  );
+}
+
+// Composant principal qui enveloppe QuizContent dans Suspense
+export default function Quiz() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-200 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md">
+          <p className="text-xl text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    }>
+      <QuizContent />
+    </Suspense>
   );
 }
