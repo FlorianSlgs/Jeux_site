@@ -31,9 +31,12 @@ const initSocket = () => {
 
 export default function Quiz() {
   const searchParams = useSearchParams();
-  <Suspense>
-    const category = searchParams.get('category');
-  </Suspense>
+  const [category, setCategory] = useState(null);
+
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    setCategory(categoryParam);
+  }, [searchParams]);
 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
@@ -322,16 +325,14 @@ export default function Quiz() {
               {scores.map((player, index) => (
                 <p
                   key={index}
-                  className={`
-                    text-sm font-medium flex justify-between p-2 rounded
+                  className={`text-sm font-medium flex justify-between p-2 rounded
                     ${questionEnded && playerAnswers.has(player.name)
                       ? playerAnswers.get(player.name)
                         ? 'text-green-600 bg-green-100'
                         : 'text-red-600 bg-red-100'
                       : 'text-gray-700'
                     }
-                  `}
-                >
+                  `}>
                   <span>{player.name}</span>
                   <span>{player.score} / 5</span>
                 </p>
