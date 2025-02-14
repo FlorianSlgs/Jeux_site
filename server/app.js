@@ -8,7 +8,16 @@ const app = express();
 
 const server = http.createServer(app);
 app.use(cors());
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "https://quiz-multijoueur.fr",
+      "https://www.quiz-multijoueur.fr",
+      "http://localhost:3000"
+    ],
+    methods: ["GET", "POST"] // Spécifiez les méthodes HTTP autorisées
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
