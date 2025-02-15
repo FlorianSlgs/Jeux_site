@@ -30,6 +30,30 @@ const initSocket = () => {
 
     socket.on('connect_error', (error) => {
       console.error('Socket connection error:', error);
+      toast.error(`Socket connection error: ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    });
+
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+      toast.error(`Socket error: ${error.message}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     });
   }
   return socket;
@@ -129,8 +153,9 @@ function QuizContent() {
     });
 
     socket.on('error', (message) => {
+      console.error('Socket error:', message);
       setIsConnecting(false);
-      toast.error(message, {
+      toast.error(`Error: ${message}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

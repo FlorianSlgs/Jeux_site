@@ -96,12 +96,16 @@ io.on("connection", (socket) => {
     );
 
     if (isPlayerAlreadyInRoom) {
-      socket.emit("error", "Vous êtes déjà connecté à cette partie");
+      const errorMessage = "Vous êtes déjà connecté à cette partie";
+      console.error(`[joinRoom] Error: ${errorMessage}`);
+      socket.emit("error", errorMessage);
       return;
     }
 
     if (rooms[room] && rooms[room].hasStarted) {
-      socket.emit("error", "Cette partie a déjà commencé. Veuillez choisir un autre numéro de session.");
+      const errorMessage = "Cette partie a déjà commencé. Veuillez choisir un autre numéro de session.";
+      console.error(`[joinRoom] Error: ${errorMessage}`);
+      socket.emit("error", errorMessage);
       return;
     }
 
@@ -270,7 +274,9 @@ async function askNewQuestion(room) {
     console.error("Error fetching questions:", err);
     if (rooms[room]) {
       rooms[room].questionInProgress = false;
-      io.to(room).emit("error", "Failed to fetch questions from the database");
+      const errorMessage = "Failed to fetch questions from the database";
+      console.error(`[askNewQuestion] Error: ${errorMessage}`);
+      io.to(room).emit("error", errorMessage);
     }
   }
 }
