@@ -10,13 +10,10 @@ const server = http.createServer(app);
 app.use(cors());
 const io = new Server(server, {
   cors: {
-    origin: [
-      "https://quiz-multijoueur.fr",
-      "https://www.quiz-multijoueur.fr",
-      "http://localhost:3000",
-    ],
+    origin: ["https://quiz-multijoueur.fr"], // Autoriser uniquement ce domaine
     credentials: true,
-    methods: ["GET", "POST"] // Spécifiez les méthodes HTTP autorisées
+    methods: ["GET", "POST"], // Limiter aux méthodes nécessaires
+    allowedHeaders: ["Content-Type", "Authorization"] // Spécifier les en-têtes autorisés
   }
 });
 
