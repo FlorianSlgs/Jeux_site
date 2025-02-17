@@ -5,60 +5,6 @@ export const metadata = {
     title: 'La culture générale : un atout majeur dans notre société | Quiz en ligne',
     description: 'Découvrez pourquoi la culture générale est essentielle pour votre développement personnel et professionnel. Conseils et méthodes pour améliorer vos connaissances.',
     keywords: 'culture générale, développement personnel, quiz culturel, apprentissage, connaissances, éducation',
-    openGraph: {
-      title: 'La culture générale : un atout majeur dans notre société',
-      description: 'Découvrez pourquoi la culture générale est essentielle pour votre développement personnel et professionnel.',
-      type: 'article',
-      publishedTime: '2025-02-16T15:02:29Z',
-      authors: ['FlorianSlgs'],
-      images: [
-        {
-          url: '/images/culture-generale.jpg', // Assurez-vous d'avoir cette image dans votre dossier public
-          width: 1200,
-          height: 630,
-          alt: 'La culture générale : un atout majeur',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: 'La culture générale : un atout majeur dans notre société',
-      description: 'Découvrez pourquoi la culture générale est essentielle pour votre développement personnel et professionnel.',
-    },
-    alternates: {
-      canonical: 'https://votre-domaine.com/articles/importance-culture-generale',
-    },
-    robots: {
-      index: true,
-      follow: true,
-      'max-snippet': -1,
-      'max-image-preview': 'large',
-      'max-video-preview': -1,
-    },
-    jsonLd: {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline: 'La culture générale : un atout majeur dans notre société',
-      description: 'Découvrez pourquoi la culture générale est essentielle pour votre développement personnel et professionnel.',
-      author: {
-        '@type': 'Person',
-        name: 'FlorianSlgs'
-      },
-      datePublished: '2025-02-16T15:02:29Z',
-      image: '/images/culture-generale.jpg',
-      publisher: {
-        '@type': 'Organization',
-        name: 'Quiz en ligne',
-        logo: {
-          '@type': 'ImageObject',
-          url: '/logo.png' // Assurez-vous d'avoir ce logo dans votre dossier public
-        }
-      },
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': 'https://votre-domaine.com/articles/importance-culture-generale'
-      }
-    }
   }
 
 export default function CultureGeneraleArticle() {

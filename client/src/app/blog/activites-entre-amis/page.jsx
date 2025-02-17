@@ -16,8 +16,6 @@ export default function ArticleActivitesAmis() {
           name="keywords" 
           content="activités entre amis, vie sociale, amitié, liens sociaux, bien-être social, jeux entre amis, quiz entre amis" 
         />
-        <meta property="og:title" content="Pourquoi les activités entre amis sont essentielles ?" />
-        <meta property="og:type" content="article" />
       </Head>
 
       {/* Hero Section */}

@@ -15,7 +15,7 @@ export default function Footer() {
                 {/* Social Media Icons */}
                 <div className="flex justify-center space-x-6 mb-6">
                     <a
-                        href="https://youtube.com"
+                        href="https://www.youtube.com/channel/UCSO2GEdXb4WqvLpjSUCkagw"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white hover:text-red-500 transform hover:scale-110 transition-all duration-300"
@@ -25,7 +25,7 @@ export default function Footer() {
                         </svg>
                     </a>
                     <a
-                        href="https://instagram.com"
+                        href="https://www.instagram.com/quizmultijoueurfr/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white hover:text-pink-500 transform hover:scale-110 transition-all duration-300"
@@ -35,7 +35,7 @@ export default function Footer() {
                         </svg>
                     </a>
                     <a
-                        href="https://tiktok.com"
+                        href="https://www.tiktok.com/@quizmultijoueurfr"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white hover:text-gray-300 transform hover:scale-110 transition-all duration-300"
@@ -48,14 +48,14 @@ export default function Footer() {
 
                 {/* Copyright and Legal Notice */}
                 <div className="text-center">
-                    <p>© 2025 Quiz multijoueur FR - Le meilleur des quiz en ligne gratuits pour jouer en groupe |  
-                        <button 
-                            className="underline focus:outline-none hover:text-gray-300 transition-colors duration-300" 
-                            onClick={toggleModal}
-                        >
-                             Mentions légales
-                        </button>
-                    </p>
+                <p>© 2025 Quiz multijoueur FR - Le meilleur des quiz en ligne gratuits pour jouer en groupe |
+                    <button 
+                        className="underline focus:outline-none hover:text-gray-300 transition-colors duration-300 ml-2" 
+                        onClick={toggleModal}
+                    >
+                        Mentions légales
+                    </button>
+                </p>
                 </div>
             </div>
 

@@ -13,19 +13,19 @@ const articles = [
     title: "La culture générale : un atout majeur dans notre société",
     description: "Découvrez pourquoi la culture générale est essentielle pour votre développement personnel et professionnel.",
     icon: "🎓",
-    link: "/articles/importance-culture-generale"
+    link: "/blog/importance-culture-generale"
   },
   {
     title: "Les quiz : un outil efficace pour progresser en s'amusant",
     description: "Apprenez comment les quiz peuvent améliorer votre mémoire et vos connaissances tout en vous divertissant.",
     icon: "🎯",
-    link: "/articles/benefices-quiz"
+    link: "/blog/benefices-quiz"
   },
   {
     title: "Pourquoi les activités entre amis sont essentielles ?",
     description: "L'importance des moments partagés entre amis pour maintenir une vie sociale épanouie et enrichissante.",
     icon: "🤝",
-    link: "/articles/activites-entre-amis"
+    link: "/blog/activites-entre-amis"
   }
 ]
 
@@ -39,7 +39,7 @@ export default function ArticlesPage() {
             Articles & Guides Quiz Multijoueur 📚
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Tout savoir sur l'organisation de quiz en ligne interactifs pour vos soirées 
+            Tout savoir sur les quiz en ligne interactifs pour vos soirées 
             entre amis, moments en famille ou événements entre collègues.
           </p>
         </div>
