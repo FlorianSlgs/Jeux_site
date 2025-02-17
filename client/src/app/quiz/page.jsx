@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
 
 let socket;
@@ -60,8 +60,15 @@ const initSocket = () => {
 };
 
 function QuizContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
+
+  useEffect(() => {
+    if (!category) {
+      router.replace('/quiz?category=Culture%20G%C3%A9n%C3%A9rale');
+    }
+  }, [category, router]);
 
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
