@@ -26,6 +26,8 @@ export default function RootLayout({ children }) {
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
         <link rel="manifest" href="/favicon/site.webmanifest" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9866248372105915"
+        crossorigin="anonymous"></script>
       </head>
       <body>
         <div className="flex flex-col min-h-screen">
