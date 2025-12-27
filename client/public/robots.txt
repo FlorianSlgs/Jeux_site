@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://quiz-multijoueur.fr/
+
+# Sitemaps
+Sitemap: https://quiz-multijoueur.fr/sitemap.xml
